@@ -2,37 +2,39 @@ import React, {useState} from 'react';
 import {View, Text, TextInput, Modal, Pressable, StyleSheet } from 'react-native';
 import { MaterialIcons, Feather} from '@expo/vector-icons';
 import { Picker } from '@react-native-community/picker';
+import { changeBillType, setBroadbandBill, setStdWaterBill, setUsgWaterBill, setStdGEBill, setUsgGEBill} from '../../actions/actions';
+import { connect } from 'react-redux';
 
   const BillInput = (props) => {
-    if (props.type == "Broadband") {
+    if (props.store.billType == "Broadband") {
       return (
         <View style={{alignItems: 'center'}}>
           <Text style={{fontSize: 15}}>Total</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10}}
             keyboardType='decimal-pad'
-            value={props.broadbandCost}
-            onChangeText={props.setBroadbandCost}
+            value={props.store.broadbandBill}
+            onChangeText={props.store.setBroadbandBill}
           />
         </View>
       );
-    } 
-    else if (props.type == "Gas/electric") {
+    }
+    else if (props.store.billType == "Gas/electric") {
       return (
         <View style={{alignItems: 'center'}}>
           <Text style={{fontSize: 15}}>Usage charge</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10, marginBottom: 15}}
             keyboardType='decimal-pad'
-            value={props.GEUsageCost}
-            onChangeText={props.setGEUsageCost}
+            value={props.store.usgGEBill}
+            onChangeText={props.store.setUsgGEBill}
           />
           <Text style={{fontSize: 15}}>Standard charge</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10}}
             keyboardType='decimal-pad'
-            value={props.GEStandardCost}
-            onChangeText={props.setGEStandardCost}
+            value={props.store.stdGEBill}
+            onChangeText={props.store.setStdGEBill}
           />
         </View>
       );
@@ -43,29 +45,23 @@ import { Picker } from '@react-native-community/picker';
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10, marginBottom: 15}}
             keyboardType='decimal-pad'
-            value={props.waterUsageCost}
-            onChangeText={props.setWaterUsageCost}
+            value={props.store.usgWaterBill}
+            onChangeText={props.store.setUsgWaterBill}
           />
           <Text style={{fontSize: 15}}>Standard charge</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10}}
             keyboardType='decimal-pad'
-            value={props.waterStandardCost}
-            onChangeText={props.setWaterStandardCost}
+            value={props.store.stdWaterBill}
+            onChangeText={props.store.setStdWaterBill}
           />
         </View>
       );
     }
   }
 
-  const BillsModal = () => {
-    const [billsModal, setBillsModal] = useState(false);
-    const [billType, setBillType] = useState("Gas/electric");
-    const [waterStandardCost, setWaterStandardCost] = useState('0.00');
-    const [waterUsageCost, setWaterUsageCost] = useState('0.00');
-    const [GEStandardCost, setGEStandardCost] = useState('0.00');
-    const [GEUsageCost, setGEUsageCost] = useState('0.00');
-    const [broadbandCost, setBroadbandCost] = useState('0.00');
+  const BillsModal = (props) => {
+    const [billsModal, setBillsModal] = useState(false);  
   
     return (
     <>
@@ -82,8 +78,8 @@ import { Picker } from '@react-native-community/picker';
               <Text style={styles.modalTitle}>Bills</Text>
               <View>
                 <Picker
-                  selectedValue={billType}
-                  onValueChange={(value, index) => setBillType(value)}
+                  selectedValue={props.billType}
+                  onValueChange={(value, index) => props.change(value)}
                 >
                   <Picker.Item label="Gas/electric" value="Gas/electric"/>
                   <Picker.Item label="Water" value="Water" />
@@ -93,17 +89,7 @@ import { Picker } from '@react-native-community/picker';
               
               <View style={{marginTop: -20}}>
                 <BillInput 
-                  type={billType}
-                  setWaterUsageCost={setWaterUsageCost}
-                  waterUsageCost={waterUsageCost}
-                  setWaterStandardCost={setWaterStandardCost}
-                  waterStandardCost={waterStandardCost}
-                  setGEStandardCost={setGEStandardCost}
-                  GEStandardCost={GEStandardCost}
-                  setGEUsageCost={setGEUsageCost}
-                  GEUsageCost={GEUsageCost}
-                  setBroadbandCost={setBroadbandCost}
-                  broadbandCost={broadbandCost}
+                  store={props}
                 />
               </View>
 
@@ -183,4 +169,26 @@ import { Picker } from '@react-native-community/picker';
   });
 
 
-  export default BillsModal;
+  const mapStateToProps = (state) => {
+    return {
+      billType: state.billType,
+      broadbandBill: state.broadbandBill,
+      usgWaterBill: state.usgWaterBill,
+      stdWaterBill: state.stdWaterBill,
+      usgGEBill: state.usgGEBill,
+      stdGEBill: state.stdGEBill,
+    }
+  }
+
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      change: (bill) => dispatch(changeBillType(bill)),
+      setBroadbandBill: (value) => dispatch(setBroadbandBill(value)),
+      setStdWaterBill: (value) => dispatch(setStdWaterBill(value)),
+      setUsgWaterBill: (value) => dispatch(setUsgWaterBill(value)),
+      setStdGEBill: (value) => dispatch(setStdGEBill(value)),
+      setUsgGEBill: (value) => dispatch(setUsgGEBill(value)),
+    }
+  }
+
+  export default connect(mapStateToProps, mapDispatchToProps)(BillsModal);

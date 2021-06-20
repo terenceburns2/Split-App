@@ -2,54 +2,51 @@ import React, {useState} from 'react';
 import {View, Text, Modal, Pressable, StyleSheet, Dimensions, TextInput} from 'react-native'
 import { FontAwesome, Feather} from '@expo/vector-icons';
 import { FlatList } from 'react-native-gesture-handler';
-import HousematesItem from './HousematesItem.js';
-import AddHousemate from './AddHousemate.js';
+import NameCard from './components/NameCard.js';
+import { connect } from 'react-redux';
+import { addHousemate } from '../../actions/actions.js';
 
-const NameModal = () => {
-    const [nameModal, setNameModal] = useState(false);
-    const [housemates, setNames] = useState([
-      {key: '1', name: 'Hold me down to delete'}
-    ]);
-
-    const pressHandler = (key) => {
-      setNames((prevNames) => {
-        return prevNames.filter(name => name.key != key);
-      });
-    }
-
-    const enterHandler = (text) => {
-      setNames((prevNames) => {
-        return [
-          { key: Math.random().toString(), name: text }, // Might need to alter this 
-          ...prevNames
-        ];
-      });
-    }
-
+const NameModal = (props) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [name, setName] = useState('');
+  
     return (
       <>
       <Modal
       animationType="fade"
       transparent={true}
-      visible={nameModal}
+      visible={modalVisible}
       onRequestClose={() => {
         Alert.alert("Modal has been closed.");
-        setNameModal(!nameModal);
+        setModalVisible(!modalVisible);
       }}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Housemates</Text>
-          <AddHousemate onEnter={enterHandler}/>
+          <Text style={styles.modalTitle}>Housemates</Text>
+          <View style={{width: '100%'}}>
+              <TextInput
+              placeholder="Enter housemate"
+              style={{borderWidth: 1, borderColor: 'grey', borderRadius: 5, padding: 10, width: '100%'}}
+              onChangeText={(name) => setName(name)}
+              onSubmitEditing={() => {
+                  if (name != "") {
+                      props.add(name);
+                      setName("");
+                  }
+              }}
+              clearTextOnFocus={true}
+              />
+          </View>
           <FlatList style={{width: '100%', height: '60%'}}
-            data = {housemates}
+            data = {props.housemates}
             renderItem = {({item}) => (
-              <HousematesItem item={item} pressHandler={pressHandler}/>
+              <NameCard item={item}/>
             )}
           />
           <View style={{flex:1, justifyContent:'flex-end'}}>
             <Pressable
-              onPress={() => setNameModal(!nameModal)}
+              onPress={() => setModalVisible(!modalVisible)}
             >
               <Feather name="check-circle" size={40} color="green" />
             </Pressable>
@@ -59,7 +56,7 @@ const NameModal = () => {
     </Modal>
     <Pressable
       style={[styles.sectionButton, styles.housemates]}
-      onPress={() => setNameModal(true)}
+      onPress={() => setModalVisible(true)}
     >
       <Text style={styles.textStyle}>Housemates</Text>
       <FontAwesome name="users" size={40} color="white"/>
@@ -136,4 +133,17 @@ const NameModal = () => {
    
   });
 
-  export default NameModal;
+  const mapStateToProps = (state) => {
+    console.log(state);
+    return {
+      housemates: state.housemates
+    }
+  }
+
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      add: (name) => dispatch(addHousemate(name)),
+    }
+  }
+
+  export default connect(mapStateToProps, mapDispatchToProps)(NameModal);

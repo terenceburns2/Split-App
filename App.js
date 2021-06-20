@@ -1,10 +1,17 @@
 import React from 'react';
 import {View, StyleSheet, Dimensions, ScrollView,} from 'react-native'
 import {Home, Input, Breakdown} from './src/pages'
+import { Provider } from 'react-redux';
+import configureStore from './src/store';
+
+// Intiate global store.
+// We pass this into Provider, which makes the store available to any nested components.
+const store = configureStore();
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <Provider store={store}>
+        <View style={styles.container}>
         <ScrollView
           snapToAlignment={"start"}
           decelerationRate={"fast"}
@@ -15,6 +22,7 @@ export default function App() {
           <Breakdown/>
         </ScrollView>
       </View>
+    </Provider>
   );
 }
 

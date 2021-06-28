@@ -5,36 +5,67 @@ import { Picker } from '@react-native-community/picker';
 import { changeBillType, setBroadbandBill, setStdWaterBill, setUsgWaterBill, setStdGEBill, setUsgGEBill} from '../../actions/actions';
 import { connect } from 'react-redux';
 
+  // This is used to conditionally render the views with respect to the bill type.
+  // The props used here are dervied from the global store.
   const BillInput = (props) => {
-    if (props.store.billType == "Broadband") {
+    // Validate the usage/standard bill cost input.
+    const validateInput = (value) => {
+      let regex = /^\d+(?:\.\d{0,2})$/;
+      if (regex.test(value))
+        return true;
+      return false;
+    }
+
+    if (props.billType == "Broadband") {
       return (
         <View style={{alignItems: 'center'}}>
           <Text style={{fontSize: 15}}>Total</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10}}
             keyboardType='decimal-pad'
-            value={props.store.broadbandBill}
-            onChangeText={props.store.setBroadbandBill}
+            onChangeText={props.setBroadbandBill}
+            onEndEditing={(e) => {
+              if (validateInput(e.nativeEvent.text)) {
+                props.setBroadbandBill(e.nativeEvent.text);
+              } else {
+                props.setBroadbandBill("0.00");
+              }
+            }}
+            value={props.broadbandBill}
           />
         </View>
       );
     }
-    else if (props.store.billType == "Gas/electric") {
+    else if (props.billType == "Gas/electric") {
       return (
         <View style={{alignItems: 'center'}}>
           <Text style={{fontSize: 15}}>Usage charge</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10, marginBottom: 15}}
             keyboardType='decimal-pad'
-            value={props.store.usgGEBill}
-            onChangeText={props.store.setUsgGEBill}
+            onChangeText={props.setUsgGEBill}
+            onEndEditing={(e) => {
+              if (validateInput(e.nativeEvent.text)) {
+                props.setUsgGEBill(e.nativeEvent.text);
+              } else {
+                props.setUsgGEBill("0.00");
+              }
+            }}
+            value={props.usgGEBill}
           />
           <Text style={{fontSize: 15}}>Standard charge</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10}}
             keyboardType='decimal-pad'
-            value={props.store.stdGEBill}
-            onChangeText={props.store.setStdGEBill}
+            onChangeText={props.setStdGEBill}
+            onEndEditing={(e) => {
+              if (validateInput(e.nativeEvent.text)) {
+                props.setStdGEBill(e.nativeEvent.text);
+              } else {
+                props.setStdGEBill("0.00");
+              }
+            }}
+            value={props.stdGEBill}
           />
         </View>
       );
@@ -45,24 +76,39 @@ import { connect } from 'react-redux';
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10, marginBottom: 15}}
             keyboardType='decimal-pad'
-            value={props.store.usgWaterBill}
-            onChangeText={props.store.setUsgWaterBill}
+            onChangeText={props.setUsgWaterBill}
+            onEndEditing={(e) => {
+              if (validateInput(e.nativeEvent.text)) {
+                props.setUsgWaterBill(e.nativeEvent.text);
+              } else {
+                props.setUsgWaterBill("0.00");
+              }
+            }}
+            value={props.usgWaterBill}
           />
           <Text style={{fontSize: 15}}>Standard charge</Text>
           <TextInput
             style={{width: '50%', borderColor: 'grey', borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 10}}
             keyboardType='decimal-pad'
-            value={props.store.stdWaterBill}
-            onChangeText={props.store.setStdWaterBill}
+            onChangeText={props.setStdWaterBill}
+            onEndEditing={(e) => {
+              if (validateInput(e.nativeEvent.text)) {
+                props.setStdWaterBill(e.nativeEvent.text);
+              } else {
+                props.setStdWaterBill("0.00");
+              }
+            }}
+            value={props.stdWaterBill}
           />
         </View>
       );
     }
   }
 
+  // Main component rendering the views with respect to the output of the conditional render above.
   const BillsModal = (props) => {
     const [billsModal, setBillsModal] = useState(false);  
-  
+
     return (
     <>
        <Modal
@@ -75,37 +121,47 @@ import { connect } from 'react-redux';
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Bills</Text>
-              <View>
-                <Picker
-                  selectedValue={props.billType}
-                  onValueChange={(value, index) => props.change(value)}
-                >
-                  <Picker.Item label="Gas/electric" value="Gas/electric"/>
-                  <Picker.Item label="Water" value="Water" />
-                  <Picker.Item label="Broadband" value="Broadband" />
-                </Picker>
+              <View style={styles.input}>
+                <Text style={styles.modalTitle}>Bills</Text>
+                <View style={{flex: 1}}>
+                  <Picker
+                    selectedValue={props.billType}
+                    onValueChange={(value, index) => props.change(value)}
+                  >
+                    <Picker.Item label="Gas/electric" value="Gas/electric"/>
+                    <Picker.Item label="Water" value="Water" />
+                    <Picker.Item label="Broadband" value="Broadband" />
+                  </Picker>
+                </View>
+                <View style={{flex:1, justifyContent: 'flex-start'}}>
+                  <BillInput 
+                    billType={props.billType}
+                    broadbandBill={props.broadbandBill}
+                    stdGEBill={props.stdGEBill}
+                    stdWaterBill={props.stdWaterBill}
+                    usgGEBill={props.usgGEBill}
+                    usgWaterBill={props.usgWaterBill}
+                    setBroadbandBill={props.setBroadbandBill}
+                    setStdGEBill={props.setStdGEBill}
+                    setStdWaterBill={props.setStdWaterBill}
+                    setUsgGEBill={props.setUsgGEBill}
+                    setUsgWaterBill={props.setUsgWaterBill}
+                  />
+                </View>
               </View>
-              
-              <View style={{marginTop: -20}}>
-                <BillInput 
-                  store={props}
-                />
-              </View>
-
               <View style={{flex:1, justifyContent:'flex-end'}}>
-                <Pressable
-                  onPress={() => setBillsModal(!billsModal)}
-                  style={{alignSelf: 'center'}}
-                >
-                   <Feather name="check-circle" size={40} color="green" />
-                </Pressable>
-            </View>
+                  <Pressable
+                    onPress={() => setBillsModal(!billsModal)}
+                    style={{alignSelf: 'center'}}
+                  >
+                    <Feather name="check-circle" size={40} color="green" />
+                  </Pressable>
+              </View>
             </View>
           </View>
         </Modal>
         <Pressable
-          style={[styles.sectionButton, styles.bills]}
+          style={styles.sectionButton}
           onPress={() => setBillsModal(true)}
         >
         <Text style={styles.textStyle}>Bills</Text>
@@ -116,16 +172,17 @@ import { connect } from 'react-redux';
   }
 
   const styles = StyleSheet.create({
-    bills: {
-      backgroundColor: '#57A773',
+    input: {
+      flex: 7
     },
     modalContainer: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
+      marginVertical: 30
     },
     modalContent: {
-      height: '61%',
+      flex: 1,
       width: '85%',
       margin: 20,
       backgroundColor: "white",
@@ -146,18 +203,19 @@ import { connect } from 'react-redux';
       fontSize: 20
     },
     sectionButton: {
-      height: 200,
+      flex: 1,
+      marginVertical: 15,
       borderRadius: 20,
       elevation: 2,
-      backgroundColor: '#eb8634',
       fontFamily: "Avenir Next",
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-evenly',
       shadowColor: 'black',
       shadowOffset: {width: 3, height: 3},
-      shadowOpacity: 0.5,
-      shadowRadius: 3
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      backgroundColor: '#25A5D0'
     },   
     textStyle: {
       color: "white",

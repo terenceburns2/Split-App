@@ -3,6 +3,7 @@ import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 import { removeHousemate } from '../../../actions/actions.js';
 
+// Component for displaying the name for within the NameModal.
 const NameCard = (props) => {
     return (
         <TouchableOpacity onLongPress={() => props.remove(props.item.key)} delayLongPress={800}>
@@ -34,4 +35,4 @@ const mapStateToProps = (state) => {
     }
   }
 
-  export default connect(mapStateToProps, mapDispatchToProps)(NameCard);
+export default connect(mapStateToProps, mapDispatchToProps)(NameCard);

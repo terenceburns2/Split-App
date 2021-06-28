@@ -5,14 +5,14 @@ const Home = () => {
     return (
     <View style={styles.home}>
       <Text style={styles.title}>Split</Text>
-      <Text style={styles.subheading}>Swipe down to begin.</Text>
+      <Text style={styles.subheading}>Swipe up to begin.</Text>
     </View>
     );
 }
 
 const styles = StyleSheet.create({
     home: {
-      backgroundColor: '#f26419',
+      backgroundColor: '#FF7547',
       alignItems: 'center',
       justifyContent: 'center',
       height: Dimensions.get('window').height,

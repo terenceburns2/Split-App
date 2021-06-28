@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, StyleSheet, Dimensions, ScrollView,} from 'react-native'
-import {Home, Input, Breakdown} from './src/pages'
+import { View, StyleSheet, Dimensions, ScrollView, } from 'react-native'
+import { Home, Input, BreakdownNav } from './src/pages'
 import { Provider } from 'react-redux';
 import configureStore from './src/store';
 
@@ -9,17 +9,18 @@ import configureStore from './src/store';
 const store = configureStore();
 
 export default function App() {
+
   return (
     <Provider store={store}>
-        <View style={styles.container}>
+      <View style={styles.container}>
         <ScrollView
           snapToAlignment={"start"}
           decelerationRate={"fast"}
           snapToInterval={Dimensions.get('window').height}
-          >
-          <Home/>
-          <Input/>
-          <Breakdown/>
+        >
+          <Home />
+          <Input />
+          <BreakdownNav />
         </ScrollView>
       </View>
     </Provider>
@@ -27,11 +28,11 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 

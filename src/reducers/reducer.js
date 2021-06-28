@@ -1,20 +1,34 @@
 import { CHANGE_BILL_TYPE, ADD_HOUSEMATE, REMOVE_HOUSEMATE, CHANGE_STD_WATER_BILL, 
             CHANGE_USG_WATER_BILL, CHANGE_STD_GE_BILL, CHANGE_USG_GE_BILL, 
-            CHANGE_BROADBAND_BILL,  CHANGE_SPLIT_OPTION, CHANGE_USER_PRESENT_DAYS} from '../actions/constants';
+            CHANGE_BROADBAND_BILL,  CHANGE_SPLIT_OPTION, SET_USER_DAYS, 
+            SET_DURATION_OF_BILL, SET_DATE_OF_BILL} from '../actions/constants';
 
 const initialState = {
     housemates: [],
     billType: "Gas/electric",
-    usgWaterBill: '0',
-    stdWaterBill: '0',
-    usgGEBill: '0',
-    stdGEBill: '0',
-    broadbandBill: '0',
-    splitOption: "even",
-    daysPresent: []
+    usgWaterBill: '0.00',
+    stdWaterBill: '0.00',
+    usgGEBill: '0.00',
+    stdGEBill: '0.00',
+    broadbandBill: '0.00',
+    splitOption: false,
+    dateOfBill: "",
+    durationOfBill: 0
 };
 
-// This handles the logic on behalf of the action.
+const updateHousemateDays = (array, action) => {
+    return array.map((item) => {
+        if (item.key != action.key) {
+            return item;
+        }
+        return {
+            ...item,
+            days: action.days
+        }
+    });
+}
+
+// This handles the logic on behalf of a dispatched action.
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case CHANGE_BILL_TYPE:
@@ -23,10 +37,12 @@ const reducer = (state = initialState, action) => {
                 billType: action.bill
             };
         case ADD_HOUSEMATE:
-            return {...state, 
+            return {
+                ...state, 
                 housemates: state.housemates.concat({
                     key: Math.random().toString(),
-                    name: action.data
+                    name: action.name,
+                    days: 0
                 })
             };
         case REMOVE_HOUSEMATE:
@@ -51,7 +67,6 @@ const reducer = (state = initialState, action) => {
                 stdGEBill: action.value
             };
         case CHANGE_USG_GE_BILL:
-            console.log("hello");
             return {
                 ...state,
                 usgGEBill: action.value
@@ -62,12 +77,28 @@ const reducer = (state = initialState, action) => {
                 broadbandBill: action.value
             };
         case CHANGE_SPLIT_OPTION:
-            return;
-        case CHANGE_USER_PRESENT_DAYS:
-            return;
+            return {
+                ...state,
+                splitOption: action.option
+            };
+        case SET_USER_DAYS:
+            return {
+                ...state,
+                housemates: updateHousemateDays(state.housemates, action)
+            };
+        case SET_DURATION_OF_BILL:
+            return {
+                ...state,
+                durationOfBill: action.days
+            };
+        case SET_DATE_OF_BILL:
+            return {
+                ...state,
+                dateOfBill: action.date
+            };
         default:
             return state;
     }
-};
+}
 
 export default reducer;

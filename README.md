@@ -18,6 +18,8 @@ I felt the best way to learn React Native/React.JS was to dive straight in. Upon
 + The user can pick what type of bill it is: water, gas/electric, or broadband.
 + The user can view the split breakdown and how each total was calculated.
 
-
-
+<p align="center">
+  <img src="./example.gif" width="230" />
+</p>
+  
 ## Progress made
